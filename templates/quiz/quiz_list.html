@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  {% if current_category %}
+    <h1>Quizzes in {{ current_category.name }}</h1>
+    <a href="{% url 'subject_list' %}" class="btn btn-link">&larr; Back to Subjects</a>
+  {% else %}
+    <h1>All Quizzes</h1>
+  {% endif %}
+
+  <div class="row g-4">
+    {% for quiz in quizzes %}
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ quiz.title }}</h5>
+            <p class="badge bg-primary mb-2">{{ quiz.category.name }}</p>
+            <p class="flex-fill">
+              Tags: {% for tag in quiz.tags.all %}
+                <span class="badge bg-info">{{ tag.name }}</span>
+              {% endfor %}
+            </p>
+            <a href="{% url 'take_quiz' quiz.id %}" class="btn btn-success mt-auto">Start Quiz</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>No quizzes available.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

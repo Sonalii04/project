@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2 class="mb-4">My Progress</h2>
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card p-3">
+        <h5>Average Score</h5>
+        <p class="fs-3">{{ stats.avg_score|default:"0" }}</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card p-3">
+        <h5>Total Attempts</h5>
+        <p class="fs-3">{{ stats.total }}</p>
+      </div>
+    </div>
+  </div>
+  <ul class="list-group">
+    {% for attempt in attempts %}
+      <li class="list-group-item d-flex justify-content-between">
+        <span>{{ attempt.date|date:"Y-m-d H:i" }} - {{ attempt.quiz.title }}</span>
+        <span class="badge bg-info">{{ attempt.score }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

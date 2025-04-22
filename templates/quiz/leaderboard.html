@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2 class="mb-4">Leaderboard</h2>
+  <ul class="list-group">
+    {% for attempt in attempts %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>{{ forloop.counter }}. {{ attempt.user.username }} - {{ attempt.quiz.title }}</div>
+        <span class="badge bg-success">{{ attempt.score }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
