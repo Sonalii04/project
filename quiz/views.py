@@ -2,7 +2,7 @@ import random
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count
-from .models import Quiz, Question, Answer, UserQuizAttempt
+from .models import Quiz, Question, Answer
 
 @login_required
 def quiz_list(request):
@@ -37,7 +37,7 @@ def leaderboard(request):
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count
-from .models import UserQuizAtttempt  # or UserQuizAttempt if tracking attempts
+# from .models import UserQuizAtttempt  # or UserQuizAttempt if tracking attempts
 
 @login_required
 def user_progress(request):
@@ -144,5 +144,8 @@ def quiz_by_subject(request, subject_id):
     quizzes = Quiz.objects.filter(category_id=subject_id)
     return render(request, 'quiz/quiz_list.html', {'quizzes': quizzes})
 
+@login_required
+def register(request):
+    return render(request, 'registration/register.html')
 
 
