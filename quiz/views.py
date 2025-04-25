@@ -35,28 +35,35 @@ def leaderboard(request):
     return render(request, 'quiz/leaderboard.html', {'attempts': attempts})
 
 from django.shortcuts import render
+from .models import UserQuizAttempt
 from django.contrib.auth.decorators import login_required
-from django.db.models import Avg, Count
-# from .models import UserQuizAtttempt  # or UserQuizAttempt if tracking attempts
+from collections import defaultdict
 
 @login_required
 def user_progress(request):
-    # Fetch and order the attempts by date
-    attempts = UserQuizAttempt.objects.filter(user=request.user).order_by('date')
+    attempts = UserQuizAttempt.objects.filter(user=request.user).select_related('quiz__category').order_by('date')
 
-    # Aggregate overall stats
-    stats = attempts.aggregate(avg_score=Avg('score'), total=Count('id'))
+    # Group attempts by subject
+    subject_data = defaultdict(lambda: {'labels': [], 'scores': []})
+    for attempt in attempts:
+        subject = attempt.quiz.category.name  # Use `quiz.subject.name` if it's called subject
+        subject_data[subject]['labels'].append(attempt.date.strftime("%Y-%m-%d %H:%M"))
+        subject_data[subject]['scores'].append(attempt.score)
 
-    # Prepare chart data
-    labels = [a.date.strftime("%Y-%m-%d %H:%M") for a in attempts]
-    scores = [a.score for a in attempts]
+    # Overall statistics
+    all_scores = [a.score for a in attempts]
+    average_score = round(sum(all_scores) / len(all_scores), 2) if all_scores else 0
 
-    return render(request, 'quiz/user_progress.html', {
-        'stats': stats,
-        'labels': labels,
-        'scores': scores,
+    context = {
+        'subject_data': dict(subject_data),
         'attempts': attempts,
-    })
+        'stats': {
+            'avg_score': average_score,
+            'total': len(all_scores)
+        }
+    }
+
+    return render(request, 'quiz/user_progress.html', context)
 
 
 from django.shortcuts import render, redirect
