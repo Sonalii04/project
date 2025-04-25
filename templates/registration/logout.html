@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="text-center mt-5">
+  <h1 class="mb-3">You have been logged out</h1>
+  <p>Thank you for visiting QuizMaster. See you again soon!</p>
+  <a href="{% url 'login' %}" class="btn btn-primary mt-3">Login Again</a>
+</div>
+{% endblock %}
