@@ -1,8 +1,47 @@
 {% extends 'base.html' %}
+
 {% block content %}
-  <div class="text-center">
-    <h2>Your Score</h2>
-    <p class="display-4 text-success">{{ score }}/{{ total }}</p>
-    <a href="{% url 'quiz_list' %}" class="btn btn-outline-primary">Back to Quizzes</a>
-  </div>
+<div class="container text-center mt-3">
+  <h2 class="mb-1">Quiz Completed!</h2> <!-- reduced margin-bottom -->
+  <canvas id="scoreChart" height="150"></canvas> <!-- no margin on canvas -->
+
+  <p class="mt-1 fs-4">You scored <strong>{{ score }}</strong> out of <strong>{{ total }}</strong></p> <!-- reduced margin-top -->
+
+  <a href="{% url 'quiz_list' %}" class="btn btn-primary mt-2">Take Another Quiz</a>
+</div>
+
+
+
+
+<!-- Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+
+<script>
+  // Confetti burst on page load
+  confetti({
+    particleCount: 150,
+    spread: 70,
+    origin: { x:0.5,y: 0.6 }
+  });
+
+  const ctx = document.getElementById('scoreChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Correct', 'Incorrect'],
+      datasets: [{
+        data: [{{ score }}, {{ total|add:"-score" }}],
+        backgroundColor: ['#4CAF50', '#F44336'],
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+</script>
+
 {% endblock %}
