@@ -18,3 +18,7 @@ admin.site.register(Question, QuestionAdmin)
 
 admin.site.register(Answer)
 admin.site.register(Quiz)
+from .models import Profile
+
+admin.site.register(Profile)
+

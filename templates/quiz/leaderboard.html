@@ -1,5 +1,6 @@
-{% extends 'base.html' %}
 
+{% extends 'base.html' %}
+{% load static %}
 {% block content %}
   <div class="container mt-5">
     <h2 class="text-center mb-4">Top Scorers</h2>
@@ -23,8 +24,16 @@
               {% for attempt in attempts %}
                 <tr class="{% if forloop.counter <= 3 %}table-success{% endif %}">
                   <td>{{ forloop.counter }}</td>
-                  <td>
-                    <img src="{{ attempt.user.profile_picture.url }}" alt="Profile Picture" class="rounded-circle" width="30" height="30">
+                  <td class="d-flex align-items-center">
+                    {% if attempt.user.profile %}
+                      {% if attempt.user.profile.profile_picture %}
+                        <img src="{{ attempt.user.profile.profile_picture.url }}" alt="Profile Picture" class="rounded-circle me-2" width="30" height="30">
+                      {% else %}
+                        <img src="{% static '/static/image/subjects/avatar.png' %}" alt="Default Profile" class="rounded-circle me-2" width="30" height="30">
+                      {% endif %}
+                    {% else %}
+                      <img src="{% static '/static/image/subjects/avatar.png' %}" alt="Default Profile" class="rounded-circle me-2" width="30" height="30">
+                    {% endif %}
                     {{ attempt.user.username }}
                   </td>
                   <td>{{ attempt.quiz.title }}</td>
