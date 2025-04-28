@@ -14,6 +14,7 @@ class Quiz(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, blank=True)
     duration = models.PositiveIntegerField(help_text="Duration in minutes", default=5)
+    created_at = models.DateTimeField(auto_now_add=True) 
     def __str__(self): return self.title
 
 class Question(models.Model):
@@ -32,3 +33,13 @@ class UserQuizAttempt(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     score = models.IntegerField()
     date = models.DateTimeField(auto_now_add=True)
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_picture = models.ImageField(
+        upload_to='profiles/',
+        default='profiles/default.jpg'
+    )
+
+    def __str__(self):
+        return f"{self.user.username} Profile"

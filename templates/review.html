@@ -1,124 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: url('your-background-image.jpg') no-repeat center center fixed;
-            background-size: cover;
-            margin: 0;
-            padding: 0;
-            position: relative;
-        }
+{% extends 'base.html' %}
 
-        .blur-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            backdrop-filter: blur(15px); /* Increased from 5px to 15px */
-            z-index: 0;
-        }
+{% block content %}
 
-        header {
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: relative;
-            z-index: 1;
-        }
+<style>
+  body {
+    background: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+  }
 
-        .review-form {
-            background: rgba(255, 255, 255, 0.8);
-            margin: 20px;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 2px 8px rgba(0,0,0,0.3);
-            position: relative;
-            z-index: 1;
-        }
+  .review-container {
+    max-width: 600px;
+    margin: 60px auto;
+    background: linear-gradient(135deg, #001f3f, #0074D9, #00f7ff);
+    background-size: 400% 400%;
+    animation: movingBG 15s ease infinite;
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    color: #fff;
+  }
 
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
+  @keyframes movingBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
 
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+  .review-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #00f7ff;
+  }
 
-        button:hover {
-            background-color: #45a049;
-        }
+  input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+  }
 
-        #successMessage {
-            display: none;
-            background: rgba(0, 0, 0, 0.8);
-            color: #00FF00;
-            padding: 20px;
-            font-size: 24px;
-            border-radius: 10px;
-            text-align: center;
-            position: fixed;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 999;
-        }
-    </style>
-</head>
-<body>
+  input::placeholder, textarea::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
 
-<div class="blur-overlay"></div>
+  /* Star Rating CSS */
+  .star-rating {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+  }
 
-<header>
-    <h1>Customer Reviews</h1>
-</header>
+  .star-rating input {
+    display: none;
+  }
 
-<main>
-    <section class="review-form">
-        <h2>Submit Your Review</h2>
-        <form id="reviewForm" method="POST" action="">
-            {% csrf_token %}
-            <label for="name">Your Name:</label>
-            <input type="text" id="name" name="name" required>
+  .star-rating label {
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
 
-            <label for="review">Your Review:</label>
-            <textarea id="review" name="review" required></textarea>
+  .star-rating input:checked ~ label,
+  .star-rating label:hover,
+  .star-rating label:hover ~ label {
+    color: #FFD700; /* Gold Color for selected stars */
+  }
 
-            <button type="submit">Submit Review</button>
-        </form>
+  button {
+    background-color: #00f7ff;
+    color: #001f3f;
+    font-weight: bold;
+    padding: 12px 20px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.3s;
+  }
 
-        <div id="successMessage">
-            ✅ Successfully Submitted!
-        </div>
-    </section>
-</main>
+  button:hover {
+    background-color: #00c0d6;
+    color: #ffffff;
+  }
+
+  #successMessage {
+    display: none;
+    background: rgba(0, 255, 170, 0.2);
+    color: #00FF00;
+    padding: 20px;
+    font-size: 24px;
+    border-radius: 12px;
+    text-align: center;
+    margin-top: 20px;
+    backdrop-filter: blur(10px);
+    animation: fadeIn 1s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9);}
+    to { opacity: 1; transform: scale(1);}
+  }
+</style>
+
+<div class="container">
+
+  <div class="review-container">
+    <h2>Submit Your Review</h2>
+    <form id="reviewForm" method="POST" action="">
+      {% csrf_token %}
+      
+      <input type="text" id="name" name="name" placeholder="Your Name" required>
+
+      <textarea id="review" name="review" placeholder="Your Review" rows="5" required></textarea>
+
+      <!-- Star Rating Section -->
+      <div class="star-rating">
+        <input type="radio" id="star5" name="rating" value="5" required />
+        <label for="star5">&#9733;</label>
+        <input type="radio" id="star4" name="rating" value="4" />
+        <label for="star4">&#9733;</label>
+        <input type="radio" id="star3" name="rating" value="3" />
+        <label for="star3">&#9733;</label>
+        <input type="radio" id="star2" name="rating" value="2" />
+        <label for="star2">&#9733;</label>
+        <input type="radio" id="star1" name="rating" value="1" />
+        <label for="star1">&#9733;</label>
+      </div>
+
+      <button type="submit">Submit Review</button>
+    </form>
+
+    <div id="successMessage">
+      ✅ Successfully Submitted!
+    </div>
+  </div>
+
+</div>
 
 <script>
-    document.getElementById("reviewForm").addEventListener("submit", function(event) {
-        event.preventDefault();
+  document.getElementById("reviewForm").addEventListener("submit", function(event) {
+    event.preventDefault();
 
-        document.getElementById("successMessage").style.display = "block";
+    document.getElementById("successMessage").style.display = "block";
 
-        setTimeout(function() {
-            window.location.href = "{% url 'quiz_list' %}";
-        }, 2000); // 2 seconds pause then redirect
-    });
+    setTimeout(function() {
+      window.location.href = "{% url 'quiz_list' %}";
+    }, 2000);
+  });
 </script>
 
-</body>
-</html>
+{% endblock %}

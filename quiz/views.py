@@ -193,21 +193,9 @@ def quiz_result(request, score, total):
         'score': score,
         'total': total
     })
-    
-from django.shortcuts import render, redirect
-from django.contrib import messages
+from django.shortcuts import render
 
+# Define the review view
 def review(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        review_text = request.POST.get('review')
-
-        # You can save the review to the database if you want
-        # For now, just show a success message
-        
-        messages.success(request, 'Successfully submitted!')
-
-        return redirect('quiz_list')  # Redirect to quiz list page after submit
-
+    # Your logic here
     return render(request, 'review.html')
-    

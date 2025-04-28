@@ -2,27 +2,40 @@
 
 {% block content %}
 <div class="container text-center mt-3">
-  <h2 class="mb-1">Quiz Completed!</h2> <!-- reduced margin-bottom -->
-  <canvas id="scoreChart" height="150"></canvas> <!-- no margin on canvas -->
+  <h2 class="mb-1">Quiz Completed!</h2> <!-- Quiz Completed Heading -->
 
-  <p class="mt-1 fs-4">You scored <strong>{{ score }}</strong> out of <strong>{{ total }}</strong></p> <!-- reduced margin-top -->
+  <!-- Hurray Animation with Color Effect -->
+  <h3 class="hurray-animation">Hurray!</h3>
 
-  <a href="{% url 'review' %}" class="btn btn-primary mt-2">Review  your Quiz</a>
+  <canvas id="scoreChart" height="150"></canvas> <!-- Score Chart -->
+
+  <p class="mt-1 fs-4">You scored <strong>{{ score }}</strong> out of <strong>{{ total }}</strong></p> <!-- Score Text -->
+
+  <!-- Display the number of quizzes completed and reward message -->
+  <p class="mt-3 fs-5">
+    You have completed <strong>{{ quizzes_completed }}</strong> quizzes!
+  </p>
+
+  {% if quizzes_completed >= 30 %}
+    <h4 class="mt-2">🎉 Congratulations! You've earned a special reward! 🎉</h4>
+    <p>Here's your exclusive badge: 🏅</p>
+  {% else %}
+    <p>Keep going! Complete more quizzes to earn a reward.</p>
+  {% endif %}
+
+  <a href="{% url 'review' %}" class="btn btn-primary mt-2">Review your Quiz</a>
 </div>
-
-
-
 
 <!-- Confetti -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
-
+<!-- ChartJS -->
 <script>
   // Confetti burst on page load
   confetti({
     particleCount: 150,
     spread: 70,
-    origin: { x:0.5,y: 0.6 }
+    origin: { x:0.5, y:0.6 }
   });
 
   const ctx = document.getElementById('scoreChart').getContext('2d');
@@ -43,5 +56,62 @@
     }
   });
 </script>
+
+<!-- Hurray Animation Style with Gradient Color and Glow -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Orbitron:wght@700&display=swap');
+
+.hurray-animation, .score-animation {
+    font-family: 'Orbitron', 'Poppins', sans-serif; /* Modern, stylish font */
+    font-size: 65px; /* Bigger and better */
+    font-weight: 700;
+    margin: 20px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 4px solid #00f7ff;
+    width: 0;
+    animation: typing 4s steps(12) forwards, blink 0.7s infinite, glow 1.5s infinite alternate, bounce 2s infinite ease-in-out;
+    display: inline-block;
+    background: linear-gradient(90deg, #00ff00, #0073e6, #00f7ff);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 5px #00ff00, 0 0 10px #0073e6, 0 0 15px #00f7ff;
+    margin-top: 20px;
+}
+
+/* Typing Effect */
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+/* Glowing Effect */
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px #00ff00, 0 0 10px #0073e6, 0 0 15px #00f7ff;
+    }
+    to {
+        text-shadow: 0 0 15px #0073e6, 0 0 20px #00ff00, 0 0 25px #00f7ff;
+    }
+}
+
+/* Bounce Effect */
+@keyframes bounce {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+    100% { transform: translateY(0); }
+}
+
+/* For Quiz Completed */
+.quiz-completed {
+    animation-delay: 0s;
+}
+
+/* For You Score */
+.you-score {
+    animation-delay: 4s;
+}
+</style>
 
 {% endblock %}

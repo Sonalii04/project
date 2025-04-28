@@ -1,36 +1,94 @@
 {% extends 'base.html' %}
 {% block content %}
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>{{ quiz.title }}</h2>
-    <div id="timer" class="fs-4 text-danger">Time Left: <span id="time">{{ quiz.duration|stringformat:"02d" }}:00</span></div>
-  </div>
-  <form method="post" id="quizForm">
-    {% csrf_token %}
-    {% for question, answers in q_and_answers %}
-      <div class="mb-4">
-        <p class="fw-bold">{{ forloop.counter }}. {{ question.text }}</p>
-        {% for answer in answers %}
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="{{ question.id }}" id="ans{{ answer.id }}" value="{{ answer.id }}">
-            <label class="form-check-label" for="ans{{ answer.id }}">{{ answer.text }}</label>
-          </div>
-        {% endfor %}
-      </div>
-    {% endfor %}
-    <button type="submit" class="btn btn-primary">Submit Answers</button>
-  </form>
-  <script>
-    let totalSeconds = {{ quiz.duration }} * 60;
-    const timer = document.getElementById('time');
-    const form = document.getElementById('quizForm');
-    const intv = setInterval(() => {
-      let m = String(Math.floor(totalSeconds/60)).padStart(2,'0');
-      let s = String(totalSeconds%60).padStart(2,'0');
-      timer.textContent = m + ':' + s;
-      if(totalSeconds-- <= 0){ clearInterval(intv); form.submit(); }
-    },1000);
-    history.pushState(null, '', location.href);
-    window.addEventListener('popstate', () => history.pushState(null,'',location.href));
-    document.onvisibilitychange = () => { if(document.hidden){ alert('No cheating!'); location.reload(); }};
-  </script>
+
+<!-- Quiz title and circular timer -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>{{ quiz.title }}</h2>
+  <div id="timerContainer" style="width: 100px; height: 100px;"></div>
+</div>
+
+<!-- Quiz form -->
+<form method="post" id="quizForm">
+  {% csrf_token %}
+  {% for question, answers in q_and_answers %}
+    <div class="mb-4">
+      <p class="fw-bold">{{ forloop.counter }}. {{ question.text }}</p>
+      {% for answer in answers %}
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="{{ question.id }}" id="ans{{ answer.id }}" value="{{ answer.id }}">
+          <label class="form-check-label" for="ans{{ answer.id }}">{{ answer.text }}</label>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-primary">Submit Answers</button>
+</form>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/progressbar.js@1.0.1/dist/progressbar.min.js"></script>
+<script>
+  let duration = {{ quiz.duration }} * 60; // total seconds
+  let remaining = duration;
+
+  // Circular progress bar
+  var bar = new ProgressBar.Circle(timerContainer, {
+    strokeWidth: 6,
+    easing: 'linear',
+    duration: duration * 1000,
+    color: '#28a745',
+    trailColor: '#eee',
+    trailWidth: 2,
+    svgStyle: null,
+    text: {
+      value: formatTime(remaining),
+      style: {
+        color: '#333',
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        padding: 0,
+        margin: 0,
+        transform: 'translate(-50%, -50%)',
+        'font-size': '1.2rem'
+      }
+    },
+    from: { color: '#28a745' },
+    to: { color: '#dc3545' },
+    step: function(state, circle) {
+      remaining = Math.ceil((1 - circle.value()) * duration);
+      circle.setText(formatTime(remaining));
+      circle.path.setAttribute('stroke', state.color);
+
+      if (remaining <= 10) {
+        circle.path.setAttribute('stroke-width', 8); // Make stroke thicker for last 10 seconds
+      }
+    }
+  });
+
+  bar.animate(1.0); // Animate from 0% to 100%
+
+  // Force submit after time up
+  setTimeout(function() {
+    alert('Time is up! Submitting quiz...');
+    document.getElementById('quizForm').submit();
+  }, duration * 1000);
+
+  // Helper function
+  function formatTime(seconds) {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}:${sec < 10 ? '0' + sec : sec}`;
+  }
+
+  // Prevent cheating (back button and visibility change)
+  history.pushState(null, '', location.href);
+  window.addEventListener('popstate', () => history.pushState(null,'',location.href));
+  document.onvisibilitychange = () => {
+    if (document.hidden) {
+      alert('No cheating! Reloading...');
+      location.reload();
+    }
+  };
+</script>
+
 {% endblock %}
