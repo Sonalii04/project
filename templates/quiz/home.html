@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <!-- Hero Section with Background Image -->
+  <div class="container-fluid text-white text-center py-5" style="background: url(https://t4.ftcdn.net/jpg/03/45/88/07/360_F_345880772_zIT2mkdCzTthplO7xqaGGrMspN0jw0ll.jpg) center/cover no-repeat;">
+    <h1 class="display-4 fw-bold">Welcome to QuizMaster!</h1>
+    <p class="lead">Your ultimate destination for exciting and challenging quizzes on various topics.</p>
+    <p  class ="" >Test your knowledge and track your progress!</p>
+    <a href="{% url 'quiz_list' %}" class="btn btn-light btn-lg mt-3">Start a Quiz</a>
+    <div class="mt-4">
+      <p>Or</p>
+      <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg mt-3 me-2">Log In</a>
+      <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg mt-3">Sign Up</a>
+    </div>
+  </div>
+
+  <!-- Why Choose Section -->
+  <div class="container mt-5">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <h3>Why Choose QuizMaster?</h3>
+        <p>QuizMaster offers a wide variety of quizzes, ranging from general knowledge to specialized subjects, helping you learn while having fun!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured Categories -->
+  <div class="container mt-5">
+    <h3 class="mb-4 text-center">Featured Categories</h3>
+    <div class="row g-4">
+      <!-- Science Card -->
+      <div class="col-md-4">
+        <div class="card bg-light h-100 shadow">
+          <img src="/static/image/subjects/science.jpg" class="card-img-top" alt="Science Quiz">
+          <div class="card-body text-center">
+            <h5 class="card-title">Science</h5>
+            <p class="card-text">Test your knowledge in fields like Physics, Chemistry, and Biology.</p>
+          </div>
+        </div>
+      </div>
+      <!-- History Card -->
+      <div class="col-md-4">
+        <div class="card bg-light h-100 shadow">
+          <img src="/static/image/subjects/history.jpg" class="card-img-top" alt="History Quiz">
+          <div class="card-body text-center">
+            <h5 class="card-title">History</h5>
+            <p class="card-text">Dive into the past and challenge your knowledge of world events.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Maths Card -->
+      <div class="col-md-4">
+        <div class="card bg-light h-100 shadow">
+          <img src="/static/image/subjects/math.jpg" class="card-img-top" alt="Maths Quiz">
+          <div class="card-body text-center">
+            <h5 class="card-title">Maths</h5>
+            <p class="card-text">Practice arithmetic, algebra, geometry and more.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

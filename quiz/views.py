@@ -3,11 +3,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count
 from .models import Quiz, Question, Answer
-
+from django.utils import timezone
+    
 @login_required
 def quiz_list(request):
     quizzes = Quiz.objects.select_related('category').prefetch_related('tags').all()
-    return render(request, 'quiz/quiz_list.html', {'quizzes': quizzes})
+    quizzes = Quiz.objects.all()
+    today = timezone.now()
+    return render(request, 'quiz/quiz_list.html', {'quizzes': quizzes, 'today': today})
+
 
 @login_required
 def take_quiz(request, quiz_id):
@@ -193,3 +197,27 @@ def quiz_result(request, score, total):
         'score': score,
         'total': total
     })
+from django.shortcuts import render
+
+def home(request):
+    return render(request, 'quiz/home.html')
+
+from .forms import UserRegisterForm
+
+def register_view(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = form.save()
+            # Save profile picture
+            profile = user.profile
+            pic = form.cleaned_data.get('profile_picture')
+            if pic:
+                profile.profile_picture = pic
+                profile.save()
+
+            messages.success(request, "Registration successful!")
+            return redirect('login')
+    else:
+        form = UserRegisterForm()
+    return render(request, 'register.html', {'form': form})

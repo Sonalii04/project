@@ -1,12 +1,44 @@
 {% extends 'base.html' %}
+
 {% block content %}
-  <h2 class="mb-4">Leaderboard</h2>
-  <ul class="list-group">
-    {% for attempt in attempts %}
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>{{ forloop.counter }}. {{ attempt.user.username }} - {{ attempt.quiz.title }}</div>
-        <span class="badge bg-success">{{ attempt.score }}</span>
-      </li>
-    {% endfor %}
-  </ul>
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">Top Scorers</h2>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Leaderboard</h5>
+        <p class="card-text">The top players based on quiz scores!</p>
+
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>User</th>
+                <th>Quiz</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for attempt in attempts %}
+                <tr class="{% if forloop.counter <= 3 %}table-success{% endif %}">
+                  <td>{{ forloop.counter }}</td>
+                  <td>
+                    <img src="{{ attempt.user.profile_picture.url }}" alt="Profile Picture" class="rounded-circle" width="30" height="30">
+                    {{ attempt.user.username }}
+                  </td>
+                  <td>{{ attempt.quiz.title }}</td>
+                  <td>
+                    <span class="badge {% if attempt.score >= 80 %}bg-success{% elif attempt.score >= 50 %}bg-warning{% else %}bg-danger{% endif %}">
+                      {{ attempt.score }}
+                    </span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}

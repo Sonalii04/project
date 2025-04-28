@@ -1,37 +1,39 @@
 {% extends 'base.html' %}
+
 {% block content %}
-
 <div class="container mt-5">
-  <h2 class="mb-4">My Progress</h2>
+  <h2 class="mb-4 text-center">My Progress</h2>
 
+  <!-- Progress Overview -->
   <div class="row mb-4">
     <div class="col-md-6">
-      <div class="card p-3 shadow-sm">
+      <div class="card p-3 shadow-lg border-0">
         <h5>Average Score</h5>
-        <p class="fs-3">{{ stats.avg_score|default:"0" }}</p>
+        <p class="fs-3 text-center text-primary">{{ stats.avg_score|default:"0" }}</p>
       </div>
     </div>
     <div class="col-md-6">
-      <div class="card p-3 shadow-sm">
+      <div class="card p-3 shadow-lg border-0">
         <h5>Total Attempts</h5>
-        <p class="fs-3">{{ stats.total }}</p>
+        <p class="fs-3 text-center text-success">{{ stats.total }}</p>
       </div>
     </div>
   </div>
 
   <!-- Graphs per subject -->
   {% for subject, data in subject_data.items %}
-    <div class="card p-4 mb-4 shadow-sm">
-      <h5 class="card-title">{{ subject }} Progress</h5>
-      <canvas id="chart_{{ forloop.counter }}" height="120"></canvas>
+    <div class="card p-4 mb-4 shadow-lg border-0">
+      <h5 class="card-title text-center">{{ subject }} Progress</h5>
+      <canvas id="chart_{{ forloop.counter }}" height="150"></canvas>
     </div>
   {% endfor %}
 
-  <h5 class="mt-4">Attempt History</h5>
+  <!-- Attempt History Section -->
+  <h5 class="mt-4 mb-3">Attempt History</h5>
   <ul class="list-group">
     {% for a in attempts %}
       <li class="list-group-item d-flex justify-content-between">
-        <span>{{ a.date|date:"Y-m-d H:i" }} — {{ a.quiz.title }}</span>
+        <span class="text-muted">{{ a.date|date:"Y-m-d H:i" }} — {{ a.quiz.title }}</span>
         <span class="badge bg-primary">{{ a.score }}</span>
       </li>
     {% endfor %}
@@ -43,8 +45,12 @@
   document.addEventListener('DOMContentLoaded', function () {
     const subjectData = {{ subject_data|safe }};
     let counter = 1;
+    
+    // Loop through each subject's data and generate the chart
     for (const subject in subjectData) {
       const ctx = document.getElementById('chart_' + counter).getContext('2d');
+      
+      // Creating new Chart
       new Chart(ctx, {
         type: 'line',
         data: {
@@ -52,7 +58,7 @@
           datasets: [{
             label: subject + ' Score',
             data: subjectData[subject].scores,
-            borderColor: 'rgba(75, 192, 192, 1)',
+            borderColor: getRandomColor(),  // Random color for each graph
             backgroundColor: 'rgba(75, 192, 192, 0.2)',
             tension: 0.3,
             pointRadius: 4,
@@ -64,18 +70,42 @@
           scales: {
             y: {
               beginAtZero: true,
-              title: { display: true, text: 'Score' }
+              title: { display: true, text: 'Score' },
+              ticks: { stepSize: 10 }
             },
             x: {
               title: { display: true, text: 'Date' }
             }
           },
           plugins: {
-            legend: { display: true }
+            tooltip: {
+              enabled: true,
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(tooltipItem) {
+                  return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
+                }
+              }
+            },
+            legend: {
+              display: true,
+              position: 'top',
+            }
           }
         }
       });
       counter++;
+    }
+
+    // Helper function to generate a random color for the graph
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
     }
   });
 </script>

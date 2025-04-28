@@ -1,12 +1,19 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <div class="d-flex justify-content-center align-items-center min-vh-100">
   <div class="card p-4 shadow-lg" style="width: 100%; max-width: 400px;">
     <h3 class="text-center mb-3">Create Your Account</h3>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
-      {{ form.as_p }}
+      {{ form.username.label_tag }} {{ form.username }}
+      {{ form.email.label_tag }} {{ form.email }}
+      {{ form.password1.label_tag }} {{ form.password1 }}
+      {{ form.password2.label_tag }} {{ form.password2 }}
+      <div class="mb-3">
+        {{ form.profile_picture.label_tag }}
+        {{ form.profile_picture }}
+        <small class="form-text text-muted">Optional: upload a profile picture or keep the default avatar.</small>
+      </div>
       <button type="submit" class="btn btn-success w-100 mt-2">Register</button>
     </form>
     <p class="text-center mt-3">

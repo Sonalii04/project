@@ -1,8 +1,10 @@
 from django.urls import path
 from . import views
-
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
-    path('', views.quiz_list, name='quiz_list'),
+    path('', views.home, name='home'),
+    path('quiz_list/', views.quiz_list, name='quiz_list'),
     path('add-subject/', views.add_subject, name='add_subject'),
     path('subjects/', views.subject_list, name='subject_list'),
     path('quiz/subject/<int:subject_id>/', views.quiz_by_subject, name='quiz_by_subject'),
@@ -14,5 +16,8 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register_view, name='register'),
-]
+    
+]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
 
