@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+# from .views import login_view, logout_view, register_view, home
 urlpatterns = [
     path('', views.home, name='home'),
     path('quiz_list/', views.quiz_list, name='quiz_list'),

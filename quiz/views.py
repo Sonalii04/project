@@ -160,30 +160,31 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib import messages
-
-
+from .models import Profile  # import your Profile model
 def login_view(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('home')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'registration/login.html', {'form': form})
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
 
-
-def register_view(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Registration successful. You can now login.")
+        if not username or not password:
+            messages.warning(request, 'Please enter both username and password.')
             return redirect('login')
-    else:
-        form = UserCreationForm()
-    return render(request, 'registration/register.html', {'form': form})
+
+        # Authenticate the user
+        user = authenticate(request, username=username, password=password)
+
+        # Check if user exists and is valid
+        if user is not None:
+            login(request, user)
+            # Ensure profile exists
+            Profile.objects.get_or_create(user=user)
+            messages.success(request, f'Welcome back, {user.username}!')
+            return redirect('home')
+        else:
+            messages.error(request, 'Invalid username or password.')
+            return redirect('login')
+
+    return render(request, 'registration/login.html')
 
 
 def logout_view(request):
@@ -203,21 +204,27 @@ def home(request):
     return render(request, 'quiz/home.html')
 
 from .forms import UserRegisterForm
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
+from .models import Profile  # if you created a separate Profile model
+from django.contrib.auth.models import User
 
 def register_view(request):
     if request.method == 'POST':
-        form = UserRegisterForm(request.POST, request.FILES)
+        form = UserCreationForm(request.POST)
+        profile_picture = request.FILES.get('profile_picture')  # get the uploaded image
+
         if form.is_valid():
             user = form.save()
-            # Save profile picture
-            profile = user.profile
-            pic = form.cleaned_data.get('profile_picture')
-            if pic:
-                profile.profile_picture = pic
-                profile.save()
 
-            messages.success(request, "Registration successful!")
-            return redirect('login')
+            # Now create a Profile linked to this user
+            Profile.objects.create(
+                user=user,
+                profile_picture=profile_picture if profile_picture else 'static/image/subjects/avatar.png'
+            )
+
+            return redirect('login')  # or wherever you want to redirect after registration
     else:
-        form = UserRegisterForm()
-    return render(request, 'register.html', {'form': form})
+        form = UserCreationForm()
+
+    return render(request, 'registration/register.html', {'form': form})
